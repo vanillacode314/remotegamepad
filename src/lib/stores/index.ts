@@ -40,11 +40,13 @@ function localStore<T>(key: string, defaultValue: T): Writable<T> {
 interface Settings {
 	host: string;
 	port: number;
+	secure: boolean;
 }
 
 const defaultSettings = {
 	host: 'localhost',
-	port: 8080
+	port: 8080,
+	secure: true
 };
 
 export const settings = localStore<Settings>(
