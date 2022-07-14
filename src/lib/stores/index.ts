@@ -1,4 +1,22 @@
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
+
+export function websocketStore(address: string, initialValue: any): Writable {
+	const { set, update, subscribe } = writable(initialValue);
+	const websocket = new WebSocket(address);
+
+	websocket.addEventListener('message', (e) => {
+		set(JSON.parse(e.data));
+	});
+
+	return {
+		subscribe,
+		set(val: any) {
+			websocket.send(JSON.stringify(val));
+			set(val);
+		},
+		update
+	};
+}
 
 function localStore<T>(key: string, defaultValue: T): Writable<T> {
 	const store = writable<T>(defaultValue);

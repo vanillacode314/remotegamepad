@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { swipe } from '$lib/actions';
+	import { getContext } from 'svelte';
+	import type { writable } from 'svelte/store';
+
 	let src: string = '/assets/analog/button_xbox_digital_analog_click_dark_3.png';
 	let angle: number = 0;
+	let lastKeys: string[] = [];
+
+	const command = getContext('command') as writable;
 
 	function updateImage(direction: string) {
 		src = '/assets/analog/button_xbox_digital_analog_click_dark_6.png';
@@ -37,27 +43,47 @@
 		}
 	}
 
+	function processKey(keys: string[]) {
+		if (JSON.stringify(keys) === JSON.stringify(lastKeys)) return;
+		lastKeys = keys;
+		for (const key of lastKeys) {
+			$command = { command: 'release', key: key };
+		}
+		for (const key of keys) {
+			$command = { command: 'hold', key };
+		}
+	}
+
 	function onSwipe(direction: string) {
 		updateImage(direction);
 
 		switch (direction) {
 			case 'U':
+				processKey(['up']);
 				break;
 			case 'UR':
+				processKey(['up', 'right']);
 				break;
 			case 'R':
+				processKey(['right']);
 				break;
 			case 'DR':
+				processKey(['down', 'right']);
 				break;
 			case 'D':
+				processKey(['down']);
 				break;
 			case 'DL':
+				processKey(['down', 'left']);
 				break;
 			case 'L':
+				processKey(['left']);
 				break;
 			case 'UL':
+				processKey(['up', 'left']);
 				break;
 			case 'end':
+				$command = { command: 'release', key: lastKeys };
 				break;
 		}
 	}
@@ -74,8 +100,8 @@
 
 <style lang="scss">
 	img {
+		grid-area: analog;
 		transition: transform 0.2s ease-out;
 		object-fit: contain;
-		grid-area: analog;
 	}
 </style>
