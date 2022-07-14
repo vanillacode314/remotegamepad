@@ -1,0 +1,9 @@
+{
+	"short_name": "gamepad",
+	"name": "gamepad",
+	"start_url": "/",
+	"background_color": "#000000",
+	"display": "standalone",
+	"scope": "/",
+	"theme_color": "#ffffff"
+}
