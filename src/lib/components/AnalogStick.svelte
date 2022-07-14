@@ -74,6 +74,7 @@
 
 <style lang="scss">
 	img {
+		transition: transform 0.2s ease-out;
 		object-fit: contain;
 		grid-area: analog;
 	}
