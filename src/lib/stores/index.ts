@@ -1,24 +1,44 @@
 import { get, writable, type Writable } from 'svelte/store';
 
-export function websocketStore(address: string, initialValue: any): Writable {
+const noop = () => {};
+
+export function websocketStore(
+	address: string,
+	initialValue: object,
+	successHandler = noop,
+	errorHandler = noop
+) {
 	const { set, update, subscribe } = writable(initialValue);
-	const websocket = new WebSocket(address);
 
-	websocket.addEventListener('message', (e) => {
-		set(JSON.parse(e.data));
-	});
+	// @ts-expect-error: <websocket undefined at start>
+	const data: { websocket: WebSocket } = { websocket: undefined };
+	function connect() {
+		data['websocket'] = new WebSocket(address);
 
+		data['websocket'].addEventListener('message', (e) => {
+			set(JSON.parse(e.data));
+		});
+
+		data['websocket'].addEventListener('open', successHandler);
+		data['websocket'].addEventListener('error', errorHandler);
+
+		addEventListener('beforeunload', () => {
+			data['websocket'].close(1000);
+		});
+	}
+	connect();
 	return {
 		subscribe,
 		set(val: any) {
-			websocket.send(JSON.stringify(val));
+			data['websocket'].send(JSON.stringify(val));
 			set(val);
 		},
-		update
+		update,
+		connect
 	};
 }
 
-function localStore<T>(key: string, defaultValue: T): Writable<T> {
+export function localStore<T>(key: string, defaultValue: T): Writable<T> {
 	const store = writable<T>(defaultValue);
 
 	if (typeof localStorage !== 'undefined') {
@@ -46,7 +66,7 @@ interface Settings {
 const defaultSettings = {
 	host: 'localhost',
 	port: 8080,
-	secure: true
+	secure: false
 };
 
 export const settings = localStore<Settings>(

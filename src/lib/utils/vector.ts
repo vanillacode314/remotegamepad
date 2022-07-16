@@ -7,41 +7,47 @@ export class Vector {
 		this.y = y;
 	}
 
-	add(other: Vector) {
+	add(other: Vector): Vector {
 		return new Vector(this.x + other.x, this.y + other.y);
 	}
 
-	sub(other: Vector) {
+	sub(other: Vector): Vector {
 		return new Vector(this.x - other.x, this.y - other.y);
 	}
 
-	mult(n: number) {
+	mult(n: number): Vector {
 		return new Vector(this.x * n, this.y * n);
 	}
 
-	set(x: number, y: number) {
+	set(x: number, y: number): Vector {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
-	angle(deg: boolean = false) {
-		if (deg) return (Math.atan2(this.y, this.x) * 180) / Math.PI;
+	get angle(): number {
 		return Math.atan2(this.y, this.x);
 	}
-	mag() {
+
+	get mag(): number {
 		return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
 	}
 
-	rotate(angle: number) {
+	rotate(angle: number): Vector {
 		const [x0, y0]: [number, number] = [this.x, this.y];
 		this.x = Math.cos(angle) * x0 - Math.sin(angle) * y0;
-		this.y = Math.cos(angle) * x0 + Math.sin(angle) * y0;
+		this.y = Math.sin(angle) * x0 + Math.cos(angle) * y0;
 		return this;
 	}
 
-	normalize() {
-		this.x /= this.mag();
-		this.y /= this.mag();
+	normalize(): Vector {
+		const mag: number = this.mag;
+		this.x /= mag;
+		this.y /= mag;
 		return this;
+	}
+
+	clone(): Vector {
+		return new Vector(this.x, this.y);
 	}
 }
