@@ -18,6 +18,7 @@
 		const p = new Vector(touch.clientX, touch.clientY);
 		const dp = p.sub(center);
 		const angle = dp.angle * (180 / Math.PI);
+		console.log(angle);
 		let key;
 		if (isBetween(angle, -45, 45)) {
 			src = '/assets/images/dpad-right.png';
@@ -25,7 +26,7 @@
 		} else if (isBetween(angle, 45, 135)) {
 			src = '/assets/images/dpad-down.png';
 			key = $controls.DPAD_DOWN;
-		} else if (isBetween(angle, 135, 225)) {
+		} else if (isBetween(angle, 135, 180) || isBetween(angle, -180, -135)) {
 			src = '/assets/images/dpad-left.png';
 			key = $controls.DPAD_LEFT;
 		} else {
